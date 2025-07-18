@@ -1,14 +1,23 @@
-import { Link, Route, Routes } from 'react-router';
+import { Link, Outlet, Route, Routes } from 'react-router';
 import './App.css';
-import {About } from "./components/About";
-import {Home } from "./components/Home";
-import {Store } from "./components/Store.js";
+// import About  from "./components/About";
+// import Home from "./components/Home";
+// import Store from "./components/Store.js";
+import { lazy, Suspense } from 'react';
+
+const Home = lazy(()=> import('./components/Home.js'));
+const About = lazy(() => import('./components/About.js').then(module => {
+  return {default: module.About}
+}));
+const Store = lazy(() => import('./components/Store.js'));
+
+
 
 function App() {
   return (
     <Routes>
       <Route path="/" element={<NavWrapper />}>
-         <Route path="/home" element={<Home />}/>
+         <Route path="/" element={<Home />}/>
          <Route path="/store" element={<Store />}/>
          <Route path="/about" element={<About />}/>
       </Route>
@@ -25,9 +34,9 @@ function NavWrapper () {
         <Link  to="/store">Store</Link>
         <Link  to="/about">About</Link>
       </nav>
-      <div>
-        This is Home page.
-      </div>
+       <Suspense fallback={<h1>Loading....</h1>}>
+         <Outlet />
+      </Suspense>
     </>
   )
 }
